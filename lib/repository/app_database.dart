@@ -14,7 +14,7 @@ class AppDatabase {
   static final NOTE_COLOUM_TITLE = "title";
   static final NOTE_COLOUM_DESC = "desc";
   var sqlCreateTable =
-      "create table $NOTE_TABLE ($NOTE_COLOUM_ID integer PRIMARY KEY autoincrement, $NOTE_COLOUM_TITLE text, $NOTE_COLOUM_DESC text)";
+      "Create table $NOTE_TABLE ($NOTE_COLOUM_ID integer PRIMARY KEY autoincrement, $NOTE_COLOUM_TITLE text, $NOTE_COLOUM_DESC text)";
 
   Future<Database> getDB() async {
     if (_database != null) {
@@ -24,10 +24,11 @@ class AppDatabase {
     }
   }
 
-  Future<bool> getNotes({required String title, required String desc}) async {
+  Future<bool> addNotes({required String title, required String desc}) async {
     var db = await getDB();
     var rowsEffected =
         await db.insert(NOTE_TABLE, Notes(title: title, desc: desc).toMap());
+    print(rowsEffected);
     if (rowsEffected > 0) {
       return true;
     } else {
@@ -41,9 +42,9 @@ class AppDatabase {
     var db = await getDB();
     var notesList = await db.query(NOTE_TABLE);
 
-    notesList.map((e) => notes!.add(Notes.fromMap(e)));
-
-    return notes!;
+    notes = notesList.map((e) => Notes.fromMap(e)).toList();
+    print(notes[0].toString());
+    return notes;
   }
 
   Future<Database> initDB() async {
