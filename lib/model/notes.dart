@@ -5,11 +5,13 @@ class Notes {
   final int? note_id;
   final String? title;
   final String? desc;
+  final DateTime dateTime;
+
   Notes({
     this.note_id,
     this.title,
     this.desc,
-  });
+  }) : this.dateTime = DateTime.now();
 
   Notes copyWith({
     int? note_id,

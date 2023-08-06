@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:notes_app/model/notes.dart';
+import 'package:notes_app/providers/note_provider.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -9,6 +11,7 @@ class AppDatabase {
   AppDatabase._();
   static final AppDatabase db = AppDatabase._();
   Database? _database;
+
   static final NOTE_TABLE = "note";
   static final NOTE_COLOUM_ID = "note_id";
   static final NOTE_COLOUM_TITLE = "title";
@@ -28,7 +31,7 @@ class AppDatabase {
     var db = await getDB();
     var rowsEffected =
         await db.insert(NOTE_TABLE, Notes(title: title, desc: desc).toMap());
-    print(rowsEffected);
+
     if (rowsEffected > 0) {
       return true;
     } else {
@@ -43,7 +46,6 @@ class AppDatabase {
     var notesList = await db.query(NOTE_TABLE);
 
     notes = notesList.map((e) => Notes.fromMap(e)).toList();
-    print(notes[0].toString());
     return notes;
   }
 
@@ -57,5 +59,22 @@ class AppDatabase {
         db.execute(sqlCreateTable);
       },
     );
+  }
+
+  Future<bool> updateNote(Notes note) async {
+    var db = await getDB();
+    var count = await db.update(
+      NOTE_TABLE,
+      note.toMap(),
+      where: "$NOTE_COLOUM_ID =${note.note_id}",
+    );
+    return count > 0;
+  }
+
+  Future<bool> deleteNote(int id) async {
+    var db = await getDB();
+    var count = await db
+        .delete(NOTE_TABLE, where: "$NOTE_COLOUM_ID = ?", whereArgs: ["$id"]);
+    return count > 0;
   }
 }
