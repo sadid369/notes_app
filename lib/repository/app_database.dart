@@ -62,6 +62,7 @@ class AppDatabase {
   }
 
   Future<bool> updateNote(Notes note) async {
+    print(note.note_id);
     var db = await getDB();
     var count = await db.update(
       NOTE_TABLE,

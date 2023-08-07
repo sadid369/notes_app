@@ -37,4 +37,15 @@ class NoteData extends ChangeNotifier {
     }
     return isDelete!;
   }
+
+  Future<bool> updateNote(Notes note) async {
+    bool? isUpdated;
+    try {
+      isUpdated = await db.updateNote(note);
+      await fetchAllNotes();
+    } catch (e) {
+      print(e.toString());
+    }
+    return isUpdated!;
+  }
 }

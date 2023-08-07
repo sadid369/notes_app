@@ -1,30 +1,38 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:notes_app/constant.dart';
-import 'package:notes_app/pages/home_page.dart';
-import 'package:notes_app/providers/note_provider.dart';
-import 'package:notes_app/repository/app_database.dart';
+import 'package:notes_app/model/notes.dart';
 import 'package:provider/provider.dart';
 
-class NotesAddPage extends StatefulWidget {
-  const NotesAddPage({Key? key}) : super(key: key);
+import 'package:notes_app/constant.dart';
+import 'package:notes_app/providers/note_provider.dart';
+
+class NoteUpdatePage extends StatefulWidget {
+  final Notes notes;
+  const NoteUpdatePage({
+    Key? key,
+    required this.notes,
+  }) : super(key: key);
 
   @override
-  _NotesAddPageState createState() => _NotesAddPageState();
+  _NoteUpdatePageState createState() => _NoteUpdatePageState();
 }
 
-class _NotesAddPageState extends State<NotesAddPage> {
+class _NoteUpdatePageState extends State<NoteUpdatePage> {
   var _titleController = TextEditingController();
   var _descController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _titleController.text = widget.notes.title!;
+    _descController.text = widget.notes.desc!;
   }
 
-  Future<bool> addNotes(String title, String desc) async {
-    bool isCreated = await Provider.of<NoteData>(context, listen: false)
-        .addNotes(title, desc);
-    return isCreated;
+  Future<bool> updateNotes(Notes note) async {
+    print('Called');
+    bool isUpdated =
+        await Provider.of<NoteData>(context, listen: false).updateNote(note);
+    return isUpdated;
   }
 
   @override
@@ -52,7 +60,7 @@ class _NotesAddPageState extends State<NotesAddPage> {
                       alignment: Alignment.center,
                       height: 60,
                       width: 60,
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Constants.tabColor,
                         borderRadius: BorderRadius.circular(12),
@@ -76,20 +84,21 @@ class _NotesAddPageState extends State<NotesAddPage> {
                       onPressed: () async {
                         if (_titleController.text.isNotEmpty &&
                             _descController.text.isNotEmpty) {
-                          var isCreatd = await addNotes(
-                              _titleController.text.toString(),
-                              _descController.text.toString());
+                          var isCreatd = await updateNotes(
+                            Notes(
+                                title: _titleController.text.toString(),
+                                desc: _descController.text.toString(),
+                                note_id: widget.notes.note_id),
+                          );
 
                           if (isCreatd) {
-                            _titleController.clear();
-                            _descController.clear();
                             showDialog(
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
                                   backgroundColor: Constants.backGroundColor,
                                   content: const Text(
-                                    'Note Added',
+                                    'Note Updated',
                                     style: TextStyle(
                                       color: Colors.white,
                                     ),
@@ -111,43 +120,10 @@ class _NotesAddPageState extends State<NotesAddPage> {
                               },
                             );
                           }
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                backgroundColor: Constants.backGroundColor,
-                                content: Text(
-                                  _titleController.text.isEmpty &&
-                                          _descController.text.isEmpty
-                                      ? 'Please Add Note Title & Description'
-                                      : _titleController.text.isEmpty
-                                          ? 'Please Add Note Title'
-                                          : "Please Add Note Description",
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text(
-                                      'Ok',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
                         }
                       },
                       child: const Text(
-                        'Save',
+                        'Update',
                         style: TextStyle(fontSize: 20, color: Colors.white),
                       ),
                     ),

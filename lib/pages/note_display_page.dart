@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:notes_app/constant.dart';
+import 'package:notes_app/pages/note_update_page.dart';
 import 'package:notes_app/pages/notes_add_page.dart';
 import 'package:notes_app/providers/note_provider.dart';
 import 'package:provider/provider.dart';
@@ -63,7 +64,15 @@ class _NoteDisplayPageState extends State<NoteDisplayPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) {
+                              return NoteUpdatePage(
+                                notes: notes,
+                              );
+                            },
+                          ));
+                        },
                         icon: Icon(
                           Icons.edit_note_rounded,
                           color: Colors.white,
